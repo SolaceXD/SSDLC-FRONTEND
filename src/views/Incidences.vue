@@ -1,11 +1,12 @@
 <template>
   <div class="incidence-list">
-    <h2>Mis Incidencias</h2>
-    <button @click="logout">Cerrar Sesión</button><br></br><br></br>
-
-    <router-link to="/generate_incidence">
-      <button>Generar Nueva Incidencia</button>
-    </router-link>
+    <header class="header">
+      <h2>Mis Incidencias</h2>
+      <div class="header-buttons">
+        <button class="header-button" @click="ingresos">Ingresos</button>
+        <button class="header-button logout" @click="logout">Cerrar Sesión</button>
+      </div>
+    </header>
 
     <div v-if="incidences.length">
       <div v-for="i in incidences" :key="i.id" class="incidence-item">
@@ -13,18 +14,18 @@
           {{ i.type }}
           <span class="status" :class="i.status">{{ i.status }}</span>
         </h3>
-        >
         <p><strong>Ubicación:</strong> {{ i.location }}</p>
         <p>{{ i.description }}</p>
         <p v-if="i.attachment">
-          <a :href="getFileUrl(i.attachment)" target="_blank">Ver adjunto</a>
+          <a :href="getFileUrl(i.attachment)" target="_blank" class="attachment-link">Ver adjunto</a>
         </p>
         <small>Registrado el: {{ formateDate(i.created_at) }}</small>
       </div>
     </div>
-    <p v-else>No hay incidencias registradas.</p>
+    <p v-else class="no-incidences">No hay incidencias registradas.</p>
   </div>
 </template>
+
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from '@/api/axios'
@@ -50,50 +51,136 @@ const logout = async () => {
   router.push('/login')
 }
 
+const ingresos = async () => {
+  router.push('/Ingresos')
+}
+
 const getFileUrl = (path) => {
-  return 'http://127.0.0.1:8000/storage/${path}'
+  return `http://127.0.0.1:8000/storage/${path}`
 }
 
 const formateDate = (datetime) => {
   return new Date(datetime).toLocaleDateString()
 }
 </script>
+
 <style scoped>
+/* Contenedor principal */
 .incidence-list {
   max-width: 800px;
   margin: auto;
-  padding: 1rem;
-  font-family: sans-serif;
+  padding: 1.5rem;
+  font-family: 'Arial', sans-serif;
+  background: #f3f4f6;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-.logout-button {
-  background-color: #e11d48;
+
+/* Encabezado */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.header h2 {
+  font-size: 1.8rem;
+  color: #1d4ed8;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.header-button {
+  background-color: #1d4ed8;
   color: white;
   padding: 0.5rem 1rem;
   border: none;
-  margin-bottom: 1rem;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
+
+.header-button:hover {
+  background-color: #2563eb;
+}
+
+.header-button.logout {
+  background-color: #e11d48;
+}
+
+.header-button.logout:hover {
+  background-color: #be123c;
+}
+
+/* Incidencias */
 .incidence-item {
-  background: #f9f9f9;
+  background: #ffffff;
   padding: 1rem;
   margin-bottom: 1rem;
   border-left: 5px solid #1d4ed8;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+.incidence-item h3 {
+  font-size: 1.2rem;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.incidence-item p {
+  font-size: 0.95rem;
+  color: #4b5563;
+  margin: 0.5rem 0;
+}
+
+.incidence-item small {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+/* Estado */
 .status {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   margin-left: 1rem;
-  padding: 0.2rem 0.5rem;
+  padding: 0.3rem 0.6rem;
   border-radius: 4px;
   text-transform: uppercase;
+  font-weight: bold;
+  color: white;
 }
+
 .status.pending {
-  background: #fde68a;
+  background: #f59e0b;
 }
+
 .status.in_review {
-  background: #bfdbfe;
+  background: #3b82f6;
 }
+
 .status.resolved {
-  background: #bbf7d0;
+  background: #10b981;
+}
+
+/* Enlace de adjunto */
+.attachment-link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.attachment-link:hover {
+  text-decoration: underline;
+}
+
+/* Sin incidencias */
+.no-incidences {
+  text-align: center;
+  font-size: 1rem;
+  color: #6b7280;
 }
 </style>
